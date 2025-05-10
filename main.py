@@ -31,57 +31,61 @@ package_cache_dir.mkdir(exist_ok=True, parents=True)
 
 async def main():
     channel = Gateway(cache_dir=cache_dir)
+    for source_channel, dest_channel in [
+        ("https://repo.prefix.dev/pypi-mirrors", "pypi-mirrors"),
+        ("https://repo.prefix.dev/bit-torrent", "bit-torrent"),
+        ("https://repo.prefix.dev/trim21-pkg", "trim21-pkg"),
+    ]:
 
-    source_channel = "https://repo.prefix.dev/pypi-mirrors"
-    dest_channel = "pypi-mirrors"
-
-    names = await channel.names(
-        channels=[source_channel],
-        platforms=platforms,
-    )
-
-    for name in names:
-        source_packages: list[RepoDataRecord] = list(
-            itertools.chain.from_iterable(
-                await channel.query(
-                    channels=[source_channel],
-                    specs=[name.normalized],
-                    platforms=platforms,
-                )
-            )
+        names = await channel.names(
+            channels=[source_channel],
+            platforms=platforms,
         )
-        source_package_files = {x.file_name: x for x in source_packages}
-        dest_package_files = {
-            x.file_name
-            for x in list(
+
+        for name in names:
+            source_packages: list[RepoDataRecord] = list(
                 itertools.chain.from_iterable(
                     await channel.query(
-                        channels=[dest_channel],
+                        channels=[source_channel],
                         specs=[name.normalized],
                         platforms=platforms,
                     )
                 )
             )
-        }
+            source_package_files = {x.file_name: x for x in source_packages}
+            dest_package_files = {
+                x.file_name
+                for x in list(
+                    itertools.chain.from_iterable(
+                        await channel.query(
+                            channels=[dest_channel],
+                            specs=[name.normalized],
+                            platforms=platforms,
+                        )
+                    )
+                )
+            }
 
-        need_mirror = set(source_package_files) - dest_package_files
-        for pkg in need_mirror:
-            package = source_package_files[pkg]
-            f = package_cache_dir.joinpath(pkg)
-            f.write_bytes(
-                httpx.get(package.url, follow_redirects=True).raise_for_status().content
-            )
-            print("uploading {}".format(pkg))
-            subprocess.check_call(
-                [
-                    str(rattler_build),
-                    "upload",
-                    "anaconda",
-                    "--owner",
-                    dest_channel,
-                    f.as_posix(),
-                ]
-            )
+            need_mirror = set(source_package_files) - dest_package_files
+            for pkg in need_mirror:
+                package = source_package_files[pkg]
+                f = package_cache_dir.joinpath(pkg)
+                f.write_bytes(
+                    httpx.get(package.url, follow_redirects=True)
+                    .raise_for_status()
+                    .content
+                )
+                print("uploading {}".format(pkg))
+                subprocess.check_call(
+                    [
+                        str(rattler_build),
+                        "upload",
+                        "anaconda",
+                        "--owner",
+                        dest_channel,
+                        f.as_posix(),
+                    ]
+                )
 
 
 if __name__ == "__main__":
