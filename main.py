@@ -36,7 +36,7 @@ async def main():
         ("https://repo.prefix.dev/bit-torrent", "bit-torrent"),
         ("https://repo.prefix.dev/trim21-pkg", "trim21-pkg"),
     ]:
-
+        print("mirror from {} to {}".format(source_channel, dest_channel))
         names = await channel.names(
             channels=[source_channel],
             platforms=platforms,
