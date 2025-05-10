@@ -12,10 +12,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  upload-conda:
-    name: Upload packages to Conda
-    permissions:
-      id-token: write
+  mirror:
+    name: Mirror Packages
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +26,11 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           activate-environment: true
+
+      - uses: jaxxstorm/action-install-gh-release@v2.1.0
+        with:
+          repo: prefix-dev/rattler-build
+          tag: "v0.41.0"
 
       - run: uv sync --locked
       - run: python main.py
