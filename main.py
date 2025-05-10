@@ -43,7 +43,7 @@ async def main():
         )
 
         for name in names:
-            source_packages: list[RepoDataRecord] = list(
+            source_package_files: list[RepoDataRecord] = list(
                 itertools.chain.from_iterable(
                     await channel.query(
                         channels=[source_channel],
@@ -52,7 +52,6 @@ async def main():
                     )
                 )
             )
-            source_package_files = {x.file_name: x for x in source_packages}
             dest_package_files = {
                 x.file_name
                 for x in list(
@@ -66,16 +65,31 @@ async def main():
                 )
             }
 
-            need_mirror = set(source_package_files) - dest_package_files
-            for i, pkg in enumerate(need_mirror):
-                package = source_package_files[pkg]
-                f = package_cache_dir.joinpath(pkg)
+            need_mirror = [
+                x for x in source_package_files if x.file_name not in dest_package_files
+            ]
+
+            for i, package in enumerate(
+                sorted(
+                    need_mirror,
+                    key=lambda package: (
+                        package.version,
+                        package.build_number,
+                        package.build,
+                    ),
+                )
+            ):
+                f = package_cache_dir.joinpath(package.file_name)
                 f.write_bytes(
                     httpx.get(package.url, follow_redirects=True)
                     .raise_for_status()
                     .content
                 )
-                print("uploading {}/{} {}".format(i + 1, len(need_mirror), pkg))
+                print(
+                    "uploading {}/{} {}".format(
+                        i + 1, len(need_mirror), package.file_name
+                    )
+                )
                 subprocess.check_call(
                     [
                         str(rattler_build),
