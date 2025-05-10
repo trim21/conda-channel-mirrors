@@ -36,4 +36,4 @@ jobs:
       - run: python main.py
         env:
           ANACONDA_API_KEY: "${{ secrets.ANACONDA_API_KEY }}"
-          PYTHONUNBUFFERED: '1'
+          PYTHONUNBUFFERED: "1"
