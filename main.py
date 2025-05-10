@@ -67,7 +67,7 @@ async def main():
             }
 
             need_mirror = set(source_package_files) - dest_package_files
-            for pkg in need_mirror:
+            for i, pkg in enumerate(need_mirror):
                 package = source_package_files[pkg]
                 f = package_cache_dir.joinpath(pkg)
                 f.write_bytes(
@@ -75,7 +75,7 @@ async def main():
                     .raise_for_status()
                     .content
                 )
-                print("uploading {}".format(pkg))
+                print("uploading {}/{} {}".format(i + 1, len(need_mirror), pkg))
                 subprocess.check_call(
                     [
                         str(rattler_build),
