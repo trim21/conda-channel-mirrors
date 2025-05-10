@@ -1,0 +1,35 @@
+name: release
+
+on:
+  push:
+    branches:
+      - "master"
+  schedule:
+    - cron: "45 13 * * *"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: false
+
+jobs:
+  upload-conda:
+    name: Upload packages to Conda
+    permissions:
+      id-token: write
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          activate-environment: true
+
+      - run: uv sync --locked
+      - run: python main.py
+        env:
+          ANACONDA_API_KEY: "${{ secrets.ANACONDA_API_KEY }}"
