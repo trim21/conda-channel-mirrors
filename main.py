@@ -9,7 +9,6 @@ import asyncio
 
 from rattler.platform import PlatformLiteral
 
-
 rattler_build = shutil.which("rattler-build")
 if rattler_build is None:
     raise RuntimeError("can't find rattler-build executable")
@@ -90,16 +89,14 @@ async def main():
                         i + 1, len(need_mirror), package.file_name
                     )
                 )
-                subprocess.check_call(
-                    [
-                        str(rattler_build),
-                        "upload",
-                        "anaconda",
-                        "--owner",
-                        dest_channel,
-                        f.as_posix(),
-                    ]
-                )
+                subprocess.check_call([
+                    str(rattler_build),
+                    "upload",
+                    "anaconda",
+                    "--owner",
+                    dest_channel,
+                    f.as_posix(),
+                ])
 
 
 if __name__ == "__main__":
