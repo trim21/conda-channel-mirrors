@@ -42,7 +42,7 @@ async def main():
             platforms=platforms,
         )
 
-        for name in names:
+        for name in sorted(names, key=lambda n: n.normalized):
             source_package_files: list[RepoDataRecord] = list(
                 itertools.chain.from_iterable(
                     await channel.query(
