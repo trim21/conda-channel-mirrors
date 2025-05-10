@@ -34,7 +34,7 @@ async def main():
     for source_channel, dest_channel in [
         ("https://repo.prefix.dev/pypi-mirrors", "pypi-mirrors"),
         ("https://repo.prefix.dev/bit-torrent", "bit-torrent"),
-        ("https://repo.prefix.dev/trim21-pkg", "trim21-pkg"),
+        ("https://repo.prefix.dev/trim21-pkgs", "trim21-pkgs"),
     ]:
         print("mirror from {} to {}".format(source_channel, dest_channel))
         names = await channel.names(
