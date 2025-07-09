@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
   "httpx==0.28.1",
-  "py-rattler==0.14.0",
+  "py-rattler==0.15.0",
 ]
 
 [tool.black]
