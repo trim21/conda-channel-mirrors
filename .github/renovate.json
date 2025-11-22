@@ -4,5 +4,13 @@
     "local>trim21/renovate-config",
     "local>trim21/renovate-config:python",
     "local>trim21/renovate-config:app"
+  ],
+  "packageRules": [
+    {
+      "matchDepTypes": [
+        "requires-python"
+      ],
+      "enabled": false
+    }
   ]
 }
