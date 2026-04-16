@@ -27,7 +27,7 @@ jobs:
         with:
           activate-environment: true
 
-      - uses: jaxxstorm/action-install-gh-release@v2.1.0
+      - uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: prefix-dev/rattler-build
           tag: "v0.61.0"
