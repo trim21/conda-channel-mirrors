@@ -30,7 +30,7 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: prefix-dev/rattler-build
-          tag: "v0.62.2"
+          tag: "v0.63.0"
 
       - run: uv sync --locked
       - run: python main.py
